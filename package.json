@@ -1,0 +1,17 @@
+{
+  "name": "nodejs-streams",
+  "version": "1.0.0",
+  "description": "Learning Node.js Streams",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "streams",
+    "nodejs",
+    "learning"
+  ],
+  "author": "caiocltm",
+  "license": "ISC"
+}
