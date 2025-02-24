@@ -1,1 +1,1 @@
-for i in `seq 1 20`; do node -e "process.stdout.write('$i-Readable: Node.js Streams\n'.repeat(1e6))" >> large-file.txt; done
+for i in `seq 1 20`; do node -e "process.stdout.write('$i-Readable: Node.js Streams\n'.repeat(1e3))" >> large-file.txt; done
