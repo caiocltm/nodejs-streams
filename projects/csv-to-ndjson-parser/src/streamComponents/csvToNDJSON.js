@@ -83,8 +83,6 @@ export default class CSVToNDJSON extends Transform {
   _final(callback) {
     if (!this.#buffer.length) return callback();
 
-    console.log(this.#buffer.toString());
-
     for (const item of this.#updateBuffer(Buffer.from(this.#BREAK_LINE_SYMBOL))) {
       this.push(item);
     }
