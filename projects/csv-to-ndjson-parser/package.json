@@ -1,0 +1,24 @@
+{
+  "name": "nodejs-streams",
+  "version": "1.0.0",
+  "description": "Learning Node.js Streams",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start:csv-parser": "node projects/csv-to-ndjson-parser/src/index.mjs",
+    "start:chat-app-client": "node nodejs-streams/projects/chat-app/client.mjs",
+    "start:chat-app-server": "node nodejs-streams/projects/chat-app/server.mjs",
+    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand --watchAll"
+  },
+  "keywords": [
+    "streams",
+    "nodejs",
+    "learning"
+  ],
+  "author": "caiocltm",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

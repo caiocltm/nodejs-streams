@@ -2,7 +2,7 @@ import { readFile, stat } from "node:fs/promises";
 import { createReadStream } from "node:fs";
 import path from "node:path";
 
-const filename = path.join(import.meta.dirname, "..", "large-file.txt");
+const filename = path.join(import.meta.dirname, "..", "..", "large-file.txt");
 
 const file = await readFile(filename);
 

@@ -29,7 +29,7 @@ const broadCaster = new PassThrough();
 broadCaster.on("data", onData);
 
 const stream = Duplex.from({
-  readable: createReadStream(join(import.meta.dirname, "..", "large-file.txt")),
+  readable: createReadStream(join(import.meta.dirname, "..", "..", "large-file.txt")),
 
   writable: createWriteStream(join(import.meta.dirname, "transformed-large-file.txt")),
 });
