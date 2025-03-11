@@ -1,7 +1,8 @@
 import { createReadStream } from "node:fs";
 import { createServer } from "node:http";
-import { Readable, Writable, Transform } from "node:stream";
+import { Readable, Transform } from "node:stream";
 import { TransformStream } from "node:stream/web";
+import { setTimeout } from "node:timers/promises";
 import CSVToJSON from "csvtojson";
 
 const PORT = 3000;
@@ -20,44 +21,57 @@ createServer(async (request, response) => {
 
   let itemsProcessed = 0;
 
-  request.once("close", () => console.info(`Connection was closed! Items processed => ${itemsProcessed}`));
+  const abortController = new AbortController();
+
+  request.once("close", () => {
+    console.info(`Connection was closed! Items processed => ${itemsProcessed}`);
+    abortController.abort();
+  });
 
   const readStream = createReadStream("./animeflv.csv");
 
   const transform = new TransformStream({
     transform(chunk, controller) {
-      if (itemsProcessed === 0) {
-        controller.enqueue(Buffer.from("["));
-        controller.enqueue(chunk);
+      const data = JSON.parse(Buffer.from(chunk));
 
-        itemsProcessed += 1;
+      const mappedData = JSON.stringify({
+        title: data.title,
+        description: data.description,
+        url: data.url_anime,
+      });
 
-        return;
-      }
-
-      controller.enqueue(Buffer.from(","));
-      controller.enqueue(chunk);
-
-      itemsProcessed += 1;
-    },
-    flush(controller) {
-      controller.enqueue(Buffer.from("]"));
+      controller.enqueue(mappedData.concat("\n"));
     },
   });
 
-  response.setHeader("Content-Type", "application/json");
-
   try {
-    await Readable.toWeb(Readable.from(readStream))
+    response.writeHead(200, headers);
+
+    await Readable.toWeb(readStream)
       .pipeThrough(Transform.toWeb(CSVToJSON()))
       .pipeThrough(transform)
-      .pipeTo(Writable.toWeb(response));
+      .pipeTo(
+        new WritableStream({
+          write(chunk) {
+            itemsProcessed += 1;
+
+            response.write(chunk);
+          },
+          close() {
+            response.end();
+          },
+          abort(reason) {
+            console.warn(`Request aborted due to => ${reason}`);
+          },
+        }),
+        { signal: abortController.signal }
+      );
 
     console.log(`Finishing streaming the file!`);
   } catch (error) {
-    console.error(`Streaming error: ${error.message}. Items processed => ${itemsProcessed}`);
+    if (!error.message.includes("abort")) throw error;
 
-    readStream.destroy();
+    console.error(`Streaming error: ${error.message}. Items processed => ${itemsProcessed}`);
   }
 })
   .listen(PORT)
